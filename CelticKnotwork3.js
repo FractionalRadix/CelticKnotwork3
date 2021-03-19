@@ -11,11 +11,14 @@ function main() {
 	let numRows = 21; //TODO!~ Figure out how to make this return an INT not a STRING: initRowControl();
 	let numCols = 21; //TODO!~ Figure out how to make this return an INT not a STRING: initColumnControl();
 
-	//TODO!+ Get the width of the border. Note that rows >= 2*width, cols >= 2*width. Our controls should add those checks, and uphold them whenever any of these three values is changed.
+	let width = 6; //TODO!+ Add a control...
+
+	//TODO!+ Note that rows >= 2*width, cols >= 2*width. Our controls should add those checks, and uphold them whenever any of these three values is changed.
+	//	Also, width has a minimum of 1.
 
 	// Automatically scale the grid to the size of the SVG.
 	var bBox = svg1.getBBox();
-console.log(bBox);
+
 	xOffset = 10;
 	yOffset = 10;
 	const widthWithoutPadding  = bBox.width  - 2 * xOffset;
@@ -23,13 +26,35 @@ console.log(bBox);
 	xScale = widthWithoutPadding / (numCols + 1);
 	yScale = heightWithoutPadding / (numRows + 1);
 
-	console.log(widthWithoutPadding);
-	console.log(numCols+1);
-	console.log(xOffset);
-	console.log(xScale);
-	console.log(widthWithoutPadding / (numCols+1));
-
 	drawDots(svg, numRows, numCols);
+
+	// Start at row=2,col=1
+	for (row = 2; row < numRows; row += 2) {
+		for (let i = 0; i < width; i++) {
+			let pt1 = rowAndColToPoint(i + row, i + 1);
+			let pt2 = rowAndColToPoint(i + row + 1, i + 2);
+			svgHelper.addLine(svg, pt1.x, pt1.y, pt2.x, pt2.y, "white", 1);
+		}
+	}
+
+	/*
+	for (let row = 2; row < numRows - 1; row ++) {
+		for (let i = 1; i <= width; i++) {
+			let col = i;
+			// If the column is even, go down. If the column is odd, go up.
+			var pt1, pt2;
+			if (col % 2 === 1) {
+				pt1 = rowAndColToPoint(row, i);
+				pt2 = rowAndColToPoint(row + 1, i + 1);
+			} else {
+				pt1 = rowAndColToPoint(row + 1, i);
+				pt2 = rowAndColToPoint(row, i + 1);
+				//TODO!+
+			}
+			svgHelper.addLine(svg, pt1.x, pt1.y, pt2.x, pt2.y, "white", 1);
+		}
+	}
+	*/
 }
 
 function initRowControl() {
@@ -83,7 +108,6 @@ function drawDots(svg, numRows, numCols) {
 	for (let row = 1; row <= numRows; row++) {
 		for (let col = 1; col <= numCols; col++) {
 			const point = rowAndColToPoint(row, col);
-console.log("("+point.x+", "+ point.y+")")
 			svgHelper.drawDot(svg, point.x, point.y, 2, "white");
 		}
 	}
