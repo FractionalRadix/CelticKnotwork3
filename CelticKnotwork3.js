@@ -28,33 +28,29 @@ function main() {
 
 	drawDots(svg, numRows, numCols);
 
-	// Start at row=2,col=1
+	// Draw the first set of lines on the left and right side.
+	// Start at row=2,col=1 / row = 2, col=numCols
 	for (row = 2; row < numRows; row += 2) {
-		for (let i = 0; i < width; i++) {
-			let pt1 = rowAndColToPoint(i + row, i + 1);
-			let pt2 = rowAndColToPoint(i + row + 1, i + 2);
-			svgHelper.addLine(svg, pt1.x, pt1.y, pt2.x, pt2.y, "white", 1);
-		}
+		// Diagonal, down-going lines on the lefthand side of the screen. Drawn from left to right, down-going.
+		let ptA = rowAndColToPoint(row, 1);
+		let ptB = rowAndColToPoint(width + row, width  + 1);
+		svgHelper.addLine(svg, ptA.x, ptA.y, ptB.x, ptB.y, "yellow", 1);
+
+		// Their mirror image: diagonal lines on the righthand side of the screen. Drawn from right to left, down-going.
+		let ptC = rowAndColToPoint(row, numCols);
+		let ptD = rowAndColToPoint(width + row, numCols - width);
+		svgHelper.addLine(svg, ptC.x, ptC.y, ptD.x, ptD.y, "yellow", 1);
 	}
 
-	/*
-	for (let row = 2; row < numRows - 1; row ++) {
-		for (let i = 1; i <= width; i++) {
-			let col = i;
-			// If the column is even, go down. If the column is odd, go up.
-			var pt1, pt2;
-			if (col % 2 === 1) {
-				pt1 = rowAndColToPoint(row, i);
-				pt2 = rowAndColToPoint(row + 1, i + 1);
-			} else {
-				pt1 = rowAndColToPoint(row + 1, i);
-				pt2 = rowAndColToPoint(row, i + 1);
-				//TODO!+
-			}
-			svgHelper.addLine(svg, pt1.x, pt1.y, pt2.x, pt2.y, "white", 1);
-		}
+	// Draw the first set of lines at the top and bottom.
+	for (col = 2; col < numCols; col += 2) {
+		if (col + width > numCols)
+			break;
+		let ptA = rowAndColToPoint(1, col);
+		let ptB = rowAndColToPoint(width + 1, col + width);
+		svgHelper.addLine(svg, ptA.x, ptA.y, ptB.x, ptB.y, "yellow", 1);		
 	}
-	*/
+
 }
 
 function initRowControl() {
