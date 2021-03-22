@@ -8,6 +8,8 @@ function main() {
 	// Initialize
 	svg = document.getElementById('svg1');
 	// Get the number of rows and the number of columns.
+initRowControl();
+initColumnControl();
 	let numRows = 21; //TODO!~ Figure out how to make this return an INT not a STRING: initRowControl();
 	let numCols = 21; //TODO!~ Figure out how to make this return an INT not a STRING: initColumnControl();
 
@@ -53,35 +55,64 @@ function main() {
 
 }
 
+function draw(svg, numRows, numCols) {
+	clearSvg();
+	drawDots(svg, numRows, numCols);
+}
+
+function clearSvg() {
+	//TODO!~ Still working on this one.
+	for (let child in children) {
+		console.log(child);
+		//svg.removeChild(child);
+	}
+}
+
 function initRowControl() {
+	console.log("In initRowControl()");
 	let rowSelector = document.getElementById("nrOfRows");
 	if (rowSelector !== undefined && rowSelector !== null) {
 		rowSelector.addEventListener('input', getRowsFromInput);
 	}
 	function getRowsFromInput() {
+		console.log("In getRowsFromInput()");
 		let rowInput = document.getElementById("nrOfRows");
 		if (rowInput === undefined || rowInput === null) {
 			nrOfRows = 21
 		} else {
 			nrOfRows = rowInput.value;
 		}
+
+		//TODO?~ Not sure if this belongs here...
+		if (xOffset !== undefined && yOffset !== undefined && xScale !== undefined && yScale !== undefined) {
+			draw(svg, nrOfRows, nrOfCols);
+		}
+
 		return nrOfRows;
 	}
 	return getRowsFromInput();
 }
 
 function initColumnControl() {
+	console.log("In initColumnControl()");
 	let colSelector = document.getElementById("nrOfCols");
 	if (colSelector !== undefined && colSelector !== null) {
 		colSelector.addEventListener('input', getColumnsFromInput);
 	}
 	function getColumnsFromInput() {
+		console.log("In getColumnsFromInput()");
 		let colInput = document.getElementById("nrOfCols");
 		if (colInput === undefined || colInput === null) {
 			nrOfCols = 21;
 		} else {
 			nrOfCols = colInput.value;
 		}
+
+		//TODO?~ Not sure if this belongs here...
+		if (xOffset !== undefined && yOffset !== undefined && xScale !== undefined && yScale !== undefined) {
+			draw(svg, nrOfRows, nrOfCols);
+		}
+
 		return nrOfCols;
 	}
 	return getColumnsFromInput();
@@ -89,8 +120,8 @@ function initColumnControl() {
 
 
 function rowAndColToPoint(row,col) {
-	var xVal = xOffset + col * xScale;
-	var yVal = yOffset + row * yScale;
+	let xVal = xOffset + col * xScale;
+	let yVal = yOffset + row * yScale;
 	return { x : xOffset + col * xScale, y : yOffset + row * yScale };
 }
 
