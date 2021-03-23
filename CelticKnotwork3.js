@@ -61,11 +61,15 @@ function draw(svg, numRows, numCols) {
 }
 
 function clearSvg() {
-	//TODO!~ Still working on this one.
-	for (let child in children) {
-		console.log(child);
-		//svg.removeChild(child);
-	}
+	//TODO!~ Still working on this one. Doesn't remove all the dots... nor all of the lines.
+	let children = svg.childNodes; // children is a NodeList
+	console.log(children);
+	children.forEach( child => {
+		if (child.nodeName === 'line' || child.nodeName === 'circle') {
+			//console.log(child.nodeName);
+			svg.removeChild(child);
+		}
+	});
 }
 
 function initRowControl() {
