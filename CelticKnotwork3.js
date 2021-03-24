@@ -3,6 +3,8 @@ var svg;
 var svgHelper = new SvgHelper();
 var xOffset, yOffset, xScale, yScale;
 
+let width = 6; //TODO!+ Add a control...
+
 function main() {
 
 	// Initialize
@@ -10,6 +12,7 @@ function main() {
 	// Get the number of rows and the number of columns.
 initRowControl();
 initColumnControl();
+
 	let numRows = 21; //TODO!~ Figure out how to make this return an INT not a STRING: initRowControl();
 	let numCols = 21; //TODO!~ Figure out how to make this return an INT not a STRING: initColumnControl();
 
@@ -28,8 +31,10 @@ initColumnControl();
 	xScale = widthWithoutPadding / (numCols + 1);
 	yScale = heightWithoutPadding / (numRows + 1);
 
-	drawDots(svg, numRows, numCols);
+	//drawDots(svg, numRows, numCols);
+	draw(svg, numRows, numCols, width);
 
+	/*
 	// Draw the first set of lines on the left and right side.
 	// Start at row=2,col=1 / row = 2, col=numCols
 	for (row = 2; row < numRows; row += 2) {
@@ -43,6 +48,8 @@ initColumnControl();
 		let ptD = rowAndColToPoint(width + row, numCols - width);
 		svgHelper.addLine(svg, ptC.x, ptC.y, ptD.x, ptD.y, "yellow", 1);
 	}
+	*/
+	//drawFirstSetLeftAndRight(numRows, numCols, width);
 
 	// Draw the first set of lines at the top and bottom.
 	for (col = 2; col < numCols; col += 2) {
@@ -55,14 +62,33 @@ initColumnControl();
 
 }
 
-function draw(svg, numRows, numCols) {
+function draw(svg, numRows, numCols, width) {
 	clearSvg();
 	drawDots(svg, numRows, numCols);
+	drawFirstSetLeftAndRight(numRows, numCols, width);
+}
+
+function drawFirstSetLeftAndRight(numRows, numCols, width) {
+	// Draw the first set of lines on the left and right side.
+	// Start at row=2,col=1 / row = 2, col=numCols
+	for (row = 2; row < numRows; row += 2) {
+		// Diagonal, down-going lines on the lefthand side of the screen. Drawn from left to right, down-going.
+		let ptA = rowAndColToPoint(row, 1);
+		let ptB = rowAndColToPoint(width + row, width  + 1);
+		svgHelper.addLine(svg, ptA.x, ptA.y, ptB.x, ptB.y, "yellow", 1);
+
+		// Their mirror image: diagonal lines on the righthand side of the screen. Drawn from right to left, down-going.
+		let ptC = rowAndColToPoint(row, numCols);
+		let ptD = rowAndColToPoint(width + row, numCols - width);
+		svgHelper.addLine(svg, ptC.x, ptC.y, ptD.x, ptD.y, "yellow", 1);
+	}
 }
 
 function clearSvg() {
-	//TODO!~ Still working on this one. Doesn't remove all the dots... nor all of the lines.
-	//TODO!~ Seems you can't remove a node from a Nodelist while iterating over it.
+
+	//TODO!-
+	// You can't remove a node from a Nodelist while iterating over it.
+	// You have to do that iteration from the END... and it seems we don't have a backwardsForEach yet.
 	/*
 	let children = svg.childNodes; // children is a NodeList
 	children.forEach( child => {
@@ -99,7 +125,7 @@ function initRowControl() {
 
 		//TODO?~ Not sure if this belongs here...
 		if (xOffset !== undefined && yOffset !== undefined && xScale !== undefined && yScale !== undefined) {
-			draw(svg, nrOfRows, nrOfCols);
+			draw(svg, nrOfRows, nrOfCols, width);
 		}
 
 		return nrOfRows;
@@ -124,7 +150,7 @@ function initColumnControl() {
 
 		//TODO?~ Not sure if this belongs here...
 		if (xOffset !== undefined && yOffset !== undefined && xScale !== undefined && yScale !== undefined) {
-			draw(svg, nrOfRows, nrOfCols);
+			draw(svg, nrOfRows, nrOfCols, width);
 		}
 
 		return nrOfCols;
