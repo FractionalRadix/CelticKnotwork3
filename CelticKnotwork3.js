@@ -31,13 +31,40 @@ initColumnControl();
 	xScale = widthWithoutPadding / (numCols + 1);
 	yScale = heightWithoutPadding / (numRows + 1);
 
-	//drawDots(svg, numRows, numCols);
 	draw(svg, numRows, numCols, width);
+}
 
-	/*
+function draw(svg, numRows, numCols, width) {
+	clearSvg();
+	drawDots(svg, numRows, numCols);
+	drawFirstSetLeftAndRight(numRows, numCols, width);
+	drawFirstSetTopAndBottom(numRows, numCols, width);
+
+	drawOutsideVerticalArcs(svg, numRows, Number(numCols));
+}
+
+function drawOutsideVerticalArcs(svg, numRows, numCols) {
+	for (let row = 2; row < numRows - 1; row += 2) {
+		// Left border
+		let ptA = rowAndColToPoint(row, 1);
+		let ptB = rowAndColToPoint(row + 2, 1);
+		let ptCtrl1 = rowAndColToPoint(row + 1, 0);
+		svgHelper.addQuadraticBezierCurve(svg, ptA, ptCtrl1, ptB, "yellow", 1);
+
+		// Right border
+		let ptC = rowAndColToPoint(row, numCols);
+		let ptD = rowAndColToPoint(row + 2, numCols);
+		let ptCtrl2 = rowAndColToPoint(row + 1, numCols + 1);
+console.log("ptCtrl2==("+ptCtrl2.x+","+ptCtrl2.y+")");
+//console.log("ptD==("+ptD.x+","+ptD.y+")");
+		svgHelper.addQuadraticBezierCurve(svg, ptC, ptCtrl2, ptD, "yellow", 1);
+	}
+}
+
+function drawFirstSetLeftAndRight(numRows, numCols, width) {
 	// Draw the first set of lines on the left and right side.
 	// Start at row=2,col=1 / row = 2, col=numCols
-	for (row = 2; row < numRows; row += 2) {
+	for (let row = 2; row < numRows; row += 2) {
 		// Diagonal, down-going lines on the lefthand side of the screen. Drawn from left to right, down-going.
 		let ptA = rowAndColToPoint(row, 1);
 		let ptB = rowAndColToPoint(width + row, width  + 1);
@@ -48,38 +75,19 @@ initColumnControl();
 		let ptD = rowAndColToPoint(width + row, numCols - width);
 		svgHelper.addLine(svg, ptC.x, ptC.y, ptD.x, ptD.y, "yellow", 1);
 	}
-	*/
-	//drawFirstSetLeftAndRight(numRows, numCols, width);
+}
 
-	// Draw the first set of lines at the top and bottom.
-	for (col = 2; col < numCols; col += 2) {
+function drawFirstSetTopAndBottom(numRows, numCols, width) {
+	for (let col = 2; col < numCols; col += 2) {
 		if (col + width > numCols)
 			break;
 		let ptA = rowAndColToPoint(1, col);
 		let ptB = rowAndColToPoint(width + 1, col + width);
-		svgHelper.addLine(svg, ptA.x, ptA.y, ptB.x, ptB.y, "yellow", 1);		
-	}
-
-}
-
-function draw(svg, numRows, numCols, width) {
-	clearSvg();
-	drawDots(svg, numRows, numCols);
-	drawFirstSetLeftAndRight(numRows, numCols, width);
-}
-
-function drawFirstSetLeftAndRight(numRows, numCols, width) {
-	// Draw the first set of lines on the left and right side.
-	// Start at row=2,col=1 / row = 2, col=numCols
-	for (row = 2; row < numRows; row += 2) {
-		// Diagonal, down-going lines on the lefthand side of the screen. Drawn from left to right, down-going.
-		let ptA = rowAndColToPoint(row, 1);
-		let ptB = rowAndColToPoint(width + row, width  + 1);
 		svgHelper.addLine(svg, ptA.x, ptA.y, ptB.x, ptB.y, "yellow", 1);
 
-		// Their mirror image: diagonal lines on the righthand side of the screen. Drawn from right to left, down-going.
-		let ptC = rowAndColToPoint(row, numCols);
-		let ptD = rowAndColToPoint(width + row, numCols - width);
+		// Corresponding line at the bottom.
+		let ptC = rowAndColToPoint(numRows, col);
+		let ptD = rowAndColToPoint(numRows - width, col + width);
 		svgHelper.addLine(svg, ptC.x, ptC.y, ptD.x, ptD.y, "yellow", 1);
 	}
 }
@@ -102,7 +110,7 @@ function clearSvg() {
 	let n = children.length;
 	for (let i = n - 1; i >= 0; i--) {
 		let child = children[i];
-		if (child.nodeName == 'line' || child.nodeName == 'circle') {
+		if (child.nodeName == 'line' || child.nodeName == 'circle' || child.nodeName == 'path') {
 			svg.removeChild(child);
 		}
 	}
@@ -156,19 +164,6 @@ function initColumnControl() {
 		return nrOfCols;
 	}
 	return getColumnsFromInput();
-}
-
-
-function rowAndColToPoint(row,col) {
-	let xVal = xOffset + col * xScale;
-	let yVal = yOffset + row * yScale;
-	return { x : xOffset + col * xScale, y : yOffset + row * yScale };
-}
-
-function pointToRowAndCol(point) {
-	var colCoor = ( point.x - xOffset ) / xScale;
-	var rowCoor = ( point.y - yOffset ) / yScale;
-	return { row : Math.round(rowCoor), col: Math.round(colCoor) };
 }
 
 function drawDots(svg, numRows, numCols) {
