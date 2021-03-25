@@ -3,7 +3,7 @@ var svg;
 var svgHelper = new SvgHelper();
 var xOffset, yOffset, xScale, yScale;
 
-let width = 4; //TODO!+ Add a control...
+let width = 5; //TODO!+ Add a control...
 
 function main() {
 
@@ -127,15 +127,18 @@ function drawFirstSetLeftAndRight(numRows, numCols, width) {
 
 function drawFirstSetTopAndBottom(numRows, numCols, width) {
 	for (let col = 2; col < numCols; col += 2) {
-		if (col + width > numCols)
-			break;
+		//if (col + width > numCols)
+		//	break;
+		let actualWidth = Math.min(width, numCols - col - 1); // Should be -2 but you get negatives...
+console.log(actualWidth);
+
 		let ptA = rowAndColToPoint(1, col);
-		let ptB = rowAndColToPoint(width + 1, col + width);
+		let ptB = rowAndColToPoint(actualWidth + 1, col + actualWidth);
 		svgHelper.addLine(svg, ptA.x, ptA.y, ptB.x, ptB.y, "yellow", 1);
 
 		// Corresponding line at the bottom.
 		let ptC = rowAndColToPoint(numRows, col);
-		let ptD = rowAndColToPoint(numRows - width, col + width);
+		let ptD = rowAndColToPoint(numRows - actualWidth, col + actualWidth);
 		svgHelper.addLine(svg, ptC.x, ptC.y, ptD.x, ptD.y, "yellow", 1);
 	}
 }
