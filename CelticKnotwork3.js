@@ -3,7 +3,7 @@ var svg;
 var svgHelper = new SvgHelper();
 var xOffset, yOffset, xScale, yScale;
 
-let width = 5; //TODO!+ Add a control...
+let width = 4; //TODO!+ Add a control...
 
 function main() {
 
@@ -113,24 +113,35 @@ function drawFirstSetLeftAndRight(numRows, numCols, width) {
 	// Draw the first set of lines on the left and right side.
 	// Start at row=2,col=1 / row = 2, col=numCols
 	for (let row = 2; row < numRows; row += 2) {
+
+		let actualWidth = width;
+		if (row + width >= numRows - width) {
+			let delta = (numRows-row-1);
+			console.log("delta=="+delta);
+			actualWidth = Math.max(0, delta / 2);
+		}
+
 		// Diagonal, down-going lines on the lefthand side of the screen. Drawn from left to right, down-going.
 		let ptA = rowAndColToPoint(row, 1);
-		let ptB = rowAndColToPoint(width + row, width  + 1);
+		let ptB = rowAndColToPoint(actualWidth + row, actualWidth  + 1);
 		svgHelper.addLine(svg, ptA.x, ptA.y, ptB.x, ptB.y, "yellow", 1);
 
 		// Their mirror image: diagonal lines on the righthand side of the screen. Drawn from right to left, down-going.
 		let ptC = rowAndColToPoint(row, numCols);
-		let ptD = rowAndColToPoint(width + row, numCols - width);
+		let ptD = rowAndColToPoint(actualWidth + row, numCols - actualWidth);
 		svgHelper.addLine(svg, ptC.x, ptC.y, ptD.x, ptD.y, "yellow", 1);
 	}
 }
 
 function drawFirstSetTopAndBottom(numRows, numCols, width) {
 	for (let col = 2; col < numCols; col += 2) {
-		//if (col + width > numCols)
-		//	break;
-		let actualWidth = Math.min(width, numCols - col - 1); // Should be -2 but you get negatives...
-console.log(actualWidth);
+
+		let actualWidth = width;
+		if (col + width >= numCols - width) {
+			let delta = (numCols-col-1);
+			console.log("delta=="+delta);
+			actualWidth = Math.max(0, delta / 2);
+		}
 
 		let ptA = rowAndColToPoint(1, col);
 		let ptB = rowAndColToPoint(actualWidth + 1, col + actualWidth);
