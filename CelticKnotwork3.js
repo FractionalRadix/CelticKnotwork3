@@ -3,7 +3,7 @@ var svg;
 var svgHelper = new SvgHelper();
 var xOffset, yOffset, xScale, yScale;
 
-let width = 6; //TODO!+ Add a control...
+let width = 4; //TODO!+ Add a control...
 
 function main() {
 
@@ -16,7 +16,6 @@ initColumnControl();
 	let numRows = 21; //TODO!~ Figure out how to make this return an INT not a STRING: initRowControl();
 	let numCols = 21; //TODO!~ Figure out how to make this return an INT not a STRING: initColumnControl();
 
-	let width = 6; //TODO!+ Add a control...
 
 	//TODO!+ Note that rows >= 2*width, cols >= 2*width. Our controls should add those checks, and uphold them whenever any of these three values is changed.
 	//	Also, width has a minimum of 1.
@@ -40,7 +39,11 @@ function draw(svg, numRows, numCols, width) {
 	drawFirstSetLeftAndRight(numRows, numCols, width);
 	drawFirstSetTopAndBottom(numRows, numCols, width);
 
+	//TODO?~ How did numCols change into a string here?
 	drawOutsideVerticalArcs(svg, numRows, Number(numCols));
+	drawInsideVerticalArcs(svg, Number(numRows), Number(numCols), width);
+	drawOutsideHorizontalArcs(svg, Number(numRows), Number(numCols));
+	drawInsideHorizontalArcs(svg, Number(numRows), Number(numCols), width);
 }
 
 function drawOutsideVerticalArcs(svg, numRows, numCols) {
@@ -55,8 +58,53 @@ function drawOutsideVerticalArcs(svg, numRows, numCols) {
 		let ptC = rowAndColToPoint(row, numCols);
 		let ptD = rowAndColToPoint(row + 2, numCols);
 		let ptCtrl2 = rowAndColToPoint(row + 1, numCols + 1);
-console.log("ptCtrl2==("+ptCtrl2.x+","+ptCtrl2.y+")");
-//console.log("ptD==("+ptD.x+","+ptD.y+")");
+		svgHelper.addQuadraticBezierCurve(svg, ptC, ptCtrl2, ptD, "yellow", 1);
+	}
+}
+
+function drawInsideVerticalArcs(svg, numRows, numCols, width) {
+	for (let row = 2 + width; row < numRows - 1 - width; row += 2) {
+		// Left inside border
+		let ptA = rowAndColToPoint(row, width + 1);
+		let ptB = rowAndColToPoint(row + 2, width + 1);
+		let ptCtrl1 = rowAndColToPoint(row + 1, width + 2);
+		svgHelper.addQuadraticBezierCurve(svg, ptA, ptCtrl1, ptB, "yellow", 1);	
+
+		// Right inside border
+		let ptC = rowAndColToPoint(row, numCols - width);
+		let ptD = rowAndColToPoint(row + 2, numCols - width);
+		let ptCtrl2 = rowAndColToPoint(row + 1, numCols - width - 1);
+		svgHelper.addQuadraticBezierCurve(svg, ptC, ptCtrl2, ptD, "yellow", 1);	
+	}
+}
+
+function drawInsideHorizontalArcs(svg, numRows, numCols, width) {
+	for (let col = 2 + width; col < numCols - 1 - width; col += 2) {
+		// Top inside border
+		let ptA = rowAndColToPoint(width + 1, col);
+		let ptB = rowAndColToPoint(width + 1, col + 2);
+		let ptCtrl1 = rowAndColToPoint(width + 2, col + 1);
+		svgHelper.addQuadraticBezierCurve(svg, ptA, ptCtrl1, ptB, "yellow", 1);	
+
+		// Bottom inside border
+		let ptC = rowAndColToPoint(numRows - width, col);
+		let ptD = rowAndColToPoint(numRows - width, col + 2);
+		let ptCtrl2 = rowAndColToPoint(numRows - width - 1, col + 1);
+		svgHelper.addQuadraticBezierCurve(svg, ptC, ptCtrl2, ptD, "yellow", 1);	
+		
+	}
+}
+
+function drawOutsideHorizontalArcs(svg, numRows, numCols) {
+	for (let col = 2; col < numCols - 1; col += 2) {
+		let ptA = rowAndColToPoint(1, col);
+		let ptB = rowAndColToPoint(1, col + 2);
+		let ptCtrl1 = rowAndColToPoint(0, col + 1);
+		svgHelper.addQuadraticBezierCurve(svg, ptA, ptCtrl1, ptB, "yellow", 1);
+
+		let ptC = rowAndColToPoint(numRows, col);
+		let ptD = rowAndColToPoint(numRows, col + 2);
+		let ptCtrl2 = rowAndColToPoint(numRows + 1, col + 1);
 		svgHelper.addQuadraticBezierCurve(svg, ptC, ptCtrl2, ptD, "yellow", 1);
 	}
 }
