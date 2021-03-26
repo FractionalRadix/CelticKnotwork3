@@ -3,7 +3,7 @@ var svg;
 var svgHelper = new SvgHelper();
 var xOffset, yOffset, xScale, yScale;
 
-let width = 2; //TODO!+ Add a control...
+let width = 5; //TODO!+ Add a control...
 
 function main() {
 
@@ -12,9 +12,11 @@ function main() {
 	// Get the number of rows and the number of columns.
 initRowControl();
 initColumnControl();
+//initWidthControl();
 
 	let numRows = 21; //TODO!~ Figure out how to make this return an INT not a STRING: initRowControl();
 	let numCols = 21; //TODO!~ Figure out how to make this return an INT not a STRING: initColumnControl();
+	width = 3; //TODO!~ Figure out how to make this return an INT not a STRING: initWidth(); 
 
 
 	//TODO!+ Note that rows >= 2*width, cols >= 2*width. Our controls should add those checks, and uphold them whenever any of these three values is changed.
@@ -43,9 +45,35 @@ function draw(svg, numRows, numCols, width) {
 
 	//TODO?~ How did numCols change into a string here?
 	drawOutsideVerticalArcs(svg, numRows, Number(numCols));
-	drawInsideVerticalArcs(svg, Number(numRows), Number(numCols), width);
+	drawInsideVerticalArcs(svg, Number(numRows), Number(numCols), Number(width));
 	drawOutsideHorizontalArcs(svg, Number(numRows), Number(numCols));
-	drawInsideHorizontalArcs(svg, Number(numRows), Number(numCols), width);
+	drawInsideHorizontalArcs(svg, Number(numRows), Number(numCols), Number(width));
+
+	drawConnectionsBetweenBorders(svg, Number(numRows), Number(numCols), Number(width));
+}
+
+function drawConnectionsBetweenBorders(svg, numRows, numCols) {
+	for (let i = 0; i < width; i++) {
+		// Connect the left border to the top border.
+		let ptA1 = rowAndColToPoint(i + 3, i + 2);
+		let ptA2 = rowAndColToPoint(i + 2, i + 3);
+		svgHelper.addLine(svg, ptA1.x, ptA1.y, ptA2.x, ptA2.y, "yellow", 1);
+
+		// Connect the top border to the right border.
+		let ptB1 = rowAndColToPoint(i + 3, numCols - 1 - i);
+		let ptB2 = rowAndColToPoint(i + 2, numCols - 2 - i);
+		svgHelper.addLine(svg, ptB1.x, ptB1.y, ptB2.x, ptB2.y, "yellow", 1);
+
+		// Connect the left border to the bottom border.
+		let ptC1 = rowAndColToPoint(numRows - 1 - i, i + 3);
+		let ptC2 = rowAndColToPoint(numRows - 2 - i, i + 2);
+		svgHelper.addLine(svg, ptC1.x, ptC1.y, ptC2.x, ptC2.y, "yellow", 1);
+
+		// Connect the bottom border to the right border.
+		let ptD1 = rowAndColToPoint(numRows - 1 - i, numCols - 2 - i);
+		let ptD2 = rowAndColToPoint(numRows - 2 - i, numCols - 1 - i);
+		svgHelper.addLine(svg, ptD1.x, ptD1.y, ptD2.x, ptD2.y, "yellow", 1);
+	}
 }
 
 function drawOutsideVerticalArcs(svg, numRows, numCols) {
@@ -171,7 +199,6 @@ function drawFirstSetTopAndBottom(numRows, numCols, width) {
 		let actualWidth = width;
 		if (col + width >= numCols - width) {
 			let delta = (numCols-col-1);
-			console.log("delta=="+delta);
 			actualWidth = Math.max(0, delta / 2);
 		}
 
@@ -183,6 +210,15 @@ function drawFirstSetTopAndBottom(numRows, numCols, width) {
 		let ptC = rowAndColToPoint(numRows, col);
 		let ptD = rowAndColToPoint(numRows - actualWidth, col + actualWidth);
 		svgHelper.addLine(svg, ptC.x, ptC.y, ptD.x, ptD.y, "yellow", 1);
+	}
+}
+
+function drawDots(svg, numRows, numCols) {
+	for (let row = 1; row <= numRows; row++) {
+		for (let col = 1; col <= numCols; col++) {
+			const point = rowAndColToPoint(row, col);
+			svgHelper.drawDot(svg, point.x, point.y, 2, "white");
+		}
 	}
 }
 
@@ -211,13 +247,11 @@ function clearSvg() {
 }
 
 function initRowControl() {
-	console.log("In initRowControl()");
 	let rowSelector = document.getElementById("nrOfRows");
 	if (rowSelector !== undefined && rowSelector !== null) {
 		rowSelector.addEventListener('input', getRowsFromInput);
 	}
 	function getRowsFromInput() {
-		console.log("In getRowsFromInput()");
 		let rowInput = document.getElementById("nrOfRows");
 		if (rowInput === undefined || rowInput === null) {
 			nrOfRows = 21
@@ -236,13 +270,11 @@ function initRowControl() {
 }
 
 function initColumnControl() {
-	console.log("In initColumnControl()");
 	let colSelector = document.getElementById("nrOfCols");
 	if (colSelector !== undefined && colSelector !== null) {
 		colSelector.addEventListener('input', getColumnsFromInput);
 	}
 	function getColumnsFromInput() {
-		console.log("In getColumnsFromInput()");
 		let colInput = document.getElementById("nrOfCols");
 		if (colInput === undefined || colInput === null) {
 			nrOfCols = 21;
@@ -260,11 +292,26 @@ function initColumnControl() {
 	return getColumnsFromInput();
 }
 
-function drawDots(svg, numRows, numCols) {
-	for (let row = 1; row <= numRows; row++) {
-		for (let col = 1; col <= numCols; col++) {
-			const point = rowAndColToPoint(row, col);
-			svgHelper.drawDot(svg, point.x, point.y, 2, "white");
-		}
+function initWidthControl() {
+	let widthSelector = document.getElementById("width");
+	if (widthSelector !== undefined && widthSelector !== null) {
+		widthSelector.addEventListener('width', getWidthFromInput);
 	}
+	function getWidthFromInput() {
+		let widthInput = document.getElementById("width");
+		if (widthInput === undefined || widthInput === null) {
+			width = 3;
+		} else {
+			width = widthInput.value;
+		}
+
+		//TODO?~ Not sure if this belongs here...
+		if (xOffset !== undefined && yOffset !== undefined && xScale !== undefined && yScale !== undefined) {
+			draw(svg, nrOfRows, nrOfCols, width);
+		}
+
+		return width;
+	}
+	return getWidthFromInput();
 }
+
