@@ -3,7 +3,7 @@ var svg;
 var svgHelper = new SvgHelper();
 var xOffset, yOffset, xScale, yScale;
 
-let width = 4; //TODO!+ Add a control...
+let width = 2; //TODO!+ Add a control...
 
 function main() {
 
@@ -37,7 +37,9 @@ function draw(svg, numRows, numCols, width) {
 	clearSvg();
 	drawDots(svg, numRows, numCols);
 	drawFirstSetLeftAndRight(numRows, numCols, width);
+	drawSecondSetLeftAndRight(numRows, numCols, width);
 	drawFirstSetTopAndBottom(numRows, numCols, width);
+	drawSecondSetTopAndBottom(numRows, numCols, width);
 
 	//TODO?~ How did numCols change into a string here?
 	drawOutsideVerticalArcs(svg, numRows, Number(numCols));
@@ -117,7 +119,6 @@ function drawFirstSetLeftAndRight(numRows, numCols, width) {
 		let actualWidth = width;
 		if (row + width >= numRows - width) {
 			let delta = (numRows-row-1);
-			console.log("delta=="+delta);
 			actualWidth = Math.max(0, delta / 2);
 		}
 
@@ -129,6 +130,37 @@ function drawFirstSetLeftAndRight(numRows, numCols, width) {
 		// Their mirror image: diagonal lines on the righthand side of the screen. Drawn from right to left, down-going.
 		let ptC = rowAndColToPoint(row, numCols);
 		let ptD = rowAndColToPoint(actualWidth + row, numCols - actualWidth);
+		svgHelper.addLine(svg, ptC.x, ptC.y, ptD.x, ptD.y, "yellow", 1);
+	}
+}
+
+function drawSecondSetLeftAndRight(numRows, numCols, width) {
+	for (row = numRows - 1; row > 1; row -= 2) {
+
+		let actualWidth = Math.min(row / 2 - 1, width);
+
+		// Diagonal, up-going lines on the lefthand side of the screen. Drawn from left to right, up-going.
+		let ptA = rowAndColToPoint(row, 1);
+		let ptB = rowAndColToPoint(row - actualWidth, 1 + actualWidth);
+		svgHelper.addLine(svg, ptA.x, ptA.y, ptB.x, ptB.y, "yellow", 1);
+
+		// And on the other side, we draw the mirror images of these lines.
+		let ptC = rowAndColToPoint(row, numCols);
+		let ptD  = rowAndColToPoint(row - actualWidth, numCols - actualWidth);
+		svgHelper.addLine(svg, ptC.x, ptC.y, ptD.x, ptD.y, "yellow", 1);
+	}
+}
+
+function drawSecondSetTopAndBottom(numRows, numCols, width) {
+	for (col = numCols - 1; col > 1; col -= 2) {
+		let actualWidth = Math.min(col / 2 - 1, width);
+
+		let ptA = rowAndColToPoint(1, col);
+		let ptB = rowAndColToPoint(1 + actualWidth, col - actualWidth);
+		svgHelper.addLine(svg, ptA.x, ptA.y, ptB.x, ptB.y, "yellow", 1);
+
+		let ptC = rowAndColToPoint(numRows, col);
+		let ptD  = rowAndColToPoint(numRows - actualWidth, col - actualWidth);
 		svgHelper.addLine(svg, ptC.x, ptC.y, ptD.x, ptD.y, "yellow", 1);
 	}
 }
