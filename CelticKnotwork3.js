@@ -29,15 +29,17 @@ initWidthControl();
 	yOffset = 10;
 	const widthWithoutPadding  = bBox.width  - 2 * xOffset;
 	const heightWithoutPadding = bBox.height - 2 * yOffset;
-	xScale = widthWithoutPadding / (numCols + 1);
-	yScale = heightWithoutPadding / (numRows + 1);
+	//xScale = widthWithoutPadding / (numCols + 1);
+	//yScale = heightWithoutPadding / (numRows + 1);
+	xScale = 10; yScale = 10;
+	
 
 	draw(svg, numRows, numCols, width);
 }
 
 function draw(svg, numRows, numCols, width) {
 	clearSvg();
-	drawDots(svg, numRows, numCols);
+	//drawDots(svg, numRows, numCols);
 	drawFirstSetLeftAndRight(numRows, numCols, Number(width));
 	drawSecondSetLeftAndRight(numRows, numCols, Number(width));
 	drawFirstSetTopAndBottom(numRows, numCols, Number(width));
@@ -317,3 +319,55 @@ function initWidthControl() {
 	return getWidthFromInput();
 }
 
+/**
+ * When the user wishes to "download" the knotwork, grab it and attach it to an invisible link element.
+ * Then click the invisible link element.
+ */
+function download() {
+	var link = document.createElement('a');
+	link.download = '' ;
+
+	var children = svg.childNodes;
+	var lines = [];
+	children.forEach( curElt => {
+		if (curElt instanceof SVGLineElement) {
+			let x1 = curElt.getAttribute("x1");
+			let y1 = curElt.getAttribute("y1");
+			let x2 = curElt.getAttribute("x2");
+			let y2 = curElt.getAttribute("y2");
+			lines.push('      <line x1="'+x1+'" y1="'+y1+'" x2="' + x2 + '" y2="' +y2+'"/>\n');
+		} else if (curElt instanceof SVGPathElement) {
+			let d = curElt.getAttribute("d");
+			lines.push('      <path d="'+d+'" fill="none"/>\n');
+		}
+	});
+
+
+	var width = 800, height = 500;
+
+	var blob;
+	var str01 = '<!DOCTYPE html>\r\n';
+	var str02 = '<html lang="en">\r\n';
+	var str03 = '<head>\r\n';
+	var str04 = '  <meta charset="UTF-8">\r\n';
+	var str05 = '</head>\r\n';
+	var str06 = '<body style="background-color: darkgreen">\r\n';
+	var str07 = '  <svg width="' + width + '" height="'+ height + '">\r\n';
+	var str08 = '    <g stroke="yellow" stroke-width="1">\r\n';
+
+	var str09 = '';
+	lines.forEach( line => {
+		str09 += line;
+	});
+
+	var str10 = '    </g>\r\n';
+	var str11 = '  </svg>\r\n';
+	var str12 = '</body>\r\n';
+	var str13 = '</html>';
+
+	blob = new Blob([str01, str02, str03, str04, str05, str06, str07, str08, str09, str10, str11, str12, str13], { type: 'text/html'} );
+	var url = URL.createObjectURL(blob);
+	link.href = url;
+	link.click();
+	URL.revokeObjectURL(link.href);
+}
