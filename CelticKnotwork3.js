@@ -3,7 +3,7 @@ var svg;
 var svgHelper = new SvgHelper();
 var xOffset, yOffset, xScale, yScale;
 
-let width = 5; //TODO!+ Add a control...
+//let width = 5; //TODO!+ Add a control...
 
 function main() {
 
@@ -12,11 +12,11 @@ function main() {
 	// Get the number of rows and the number of columns.
 initRowControl();
 initColumnControl();
-//initWidthControl();
+initWidthControl();
 
 	let numRows = 21; //TODO!~ Figure out how to make this return an INT not a STRING: initRowControl();
 	let numCols = 21; //TODO!~ Figure out how to make this return an INT not a STRING: initColumnControl();
-	width = 3; //TODO!~ Figure out how to make this return an INT not a STRING: initWidth(); 
+	width = 4; //TODO!~ Figure out how to make this return an INT not a STRING: initWidth(); 
 
 
 	//TODO!+ Note that rows >= 2*width, cols >= 2*width. Our controls should add those checks, and uphold them whenever any of these three values is changed.
@@ -38,10 +38,10 @@ initColumnControl();
 function draw(svg, numRows, numCols, width) {
 	clearSvg();
 	drawDots(svg, numRows, numCols);
-	drawFirstSetLeftAndRight(numRows, numCols, width);
-	drawSecondSetLeftAndRight(numRows, numCols, width);
-	drawFirstSetTopAndBottom(numRows, numCols, width);
-	drawSecondSetTopAndBottom(numRows, numCols, width);
+	drawFirstSetLeftAndRight(numRows, numCols, Number(width));
+	drawSecondSetLeftAndRight(numRows, numCols, Number(width));
+	drawFirstSetTopAndBottom(numRows, numCols, Number(width));
+	drawSecondSetTopAndBottom(numRows, numCols, Number(width));
 
 	//TODO?~ How did numCols change into a string here?
 	drawOutsideVerticalArcs(svg, numRows, Number(numCols));
@@ -295,7 +295,8 @@ function initColumnControl() {
 function initWidthControl() {
 	let widthSelector = document.getElementById("width");
 	if (widthSelector !== undefined && widthSelector !== null) {
-		widthSelector.addEventListener('width', getWidthFromInput);
+		console.log("widthSelector=="+widthSelector);
+		widthSelector.addEventListener('input', getWidthFromInput);
 	}
 	function getWidthFromInput() {
 		let widthInput = document.getElementById("width");
@@ -304,6 +305,7 @@ function initWidthControl() {
 		} else {
 			width = widthInput.value;
 		}
+		console.log("width=="+width);
 
 		//TODO?~ Not sure if this belongs here...
 		if (xOffset !== undefined && yOffset !== undefined && xScale !== undefined && yScale !== undefined) {
